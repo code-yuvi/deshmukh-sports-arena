@@ -9,14 +9,19 @@ const slotGroups = document.querySelector("#slot-groups");
 const pickedSummary = document.querySelector("#picked-summary");
 const dateField = document.querySelector("#booking-date");
 const timeField = document.querySelector("#booking-time");
+const hoursField = document.querySelector("#booking-hours");
+const advanceField = document.querySelector("#booking-advance");
+const payNote = document.querySelector("#pay-note");
 
 const SLOT_HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
 const HELD_KEY = "dsa-held-slots";
 const now = new Date();
 const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 let viewMonth = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+const ADVANCE = { 1: 200, 2: 400, 3: 600 };
 let selectedDate = null;
-let selectedSlot = null;
+let selectedSlots = [];
+let preferredHours = null;
 
 menuButton.addEventListener("click", () => {
   const isOpen = navigation.classList.toggle("open");
@@ -149,9 +154,8 @@ function renderCalendar(direction) {
     if (!button.disabled) {
       button.addEventListener("click", () => {
         selectedDate = key;
-        selectedSlot = null;
-        dateField.value = "";
-        timeField.value = "";
+        selectedSlots = [];
+        preferredHours = null;
         renderCalendar();
         renderSlots();
       });
@@ -160,12 +164,115 @@ function renderCalendar(direction) {
   });
 }
 
-function renderSlots() {
+function selectedHours() {
+  return selectedSlots.map((id) => Number(id.slice(0, 2))).sort((left, right) => left - right);
+}
+
+function openBlock(startHour, count) {
+  const slots = daySlots(parseKey(selectedDate));
+  const block = [];
+  for (let hour = startHour; hour < startHour + count; hour += 1) {
+    const slot = slots.find((item) => Number(item.id.slice(0, 2)) === hour);
+    if (!slot || !slot.open) break;
+    block.push(slot.id);
+  }
+  return block;
+}
+
+function syncSelection(note) {
+  const hours = selectedHours();
+  const count = hours.length;
+  document.querySelectorAll(".pay-card").forEach((card) => {
+    const active = Number(card.dataset.hours) === count;
+    card.classList.toggle("active", active);
+    card.setAttribute("aria-pressed", String(active));
+  });
+
+  if (!selectedDate || count === 0) {
+    dateField.value = "";
+    timeField.value = "";
+    hoursField.value = "";
+    advanceField.value = "";
+    pickedSummary.textContent = selectedDate
+      ? `${slotHeading.textContent} · choose 1, 2 or 3 open hours`
+      : "No timing selected yet.";
+    payNote.textContent = note || "Select 1, 2 or 3 back-to-back hours. Advance is ₹200 per hour.";
+    return;
+  }
+
+  const range = `${formatClock(hours[0])} – ${formatClock(hours[hours.length - 1] + 1)}`;
+  const advance = ADVANCE[count];
+  dateField.value = selectedDate;
+  timeField.value = range;
+  hoursField.value = `${count} hour${count > 1 ? "s" : ""}`;
+  advanceField.value = `₹${advance}`;
+  pickedSummary.textContent = `${slotHeading.textContent} · ${range} · Advance ₹${advance}`;
+  payNote.textContent = note || `${hoursField.value} selected. Pay ₹${advance} in advance to confirm. The balance is collected at the arena.`;
+}
+
+function toggleSlot(hour) {
+  const hours = selectedHours();
+  let note = "";
+
+  if (!hours.length) {
+    const count = preferredHours || 1;
+    const block = openBlock(hour, count);
+    selectedSlots = block;
+    if (block.length < count) {
+      note = block.length
+        ? `Only ${block.length} open hour${block.length > 1 ? "s" : ""} from this start time.`
+        : "That hour is not open.";
+    }
+  } else if (hours.includes(hour)) {
+    if (hours.length === 1 || hour === hours[0] || hour === hours[hours.length - 1]) {
+      selectedSlots = selectedSlots.filter((id) => Number(id.slice(0, 2)) !== hour);
+    } else {
+      selectedSlots = selectedSlots.filter((id) => Number(id.slice(0, 2)) <= hour);
+    }
+  } else if (hour === hours[0] - 1 || hour === hours[hours.length - 1] + 1) {
+    if (hours.length >= 3) {
+      note = "Advance booking covers up to 3 hours in one request.";
+    } else {
+      selectedSlots = openBlock(Math.min(hours[0], hour), hours.length + 1);
+    }
+  } else {
+    selectedSlots = openBlock(hour, preferredHours || 1);
+  }
+
+  preferredHours = selectedSlots.length || preferredHours;
+  renderSlots(note);
+}
+
+function applyDuration(count) {
+  preferredHours = count;
+  if (!selectedDate) {
+    payNote.textContent = "Choose a date first, then pick a starting hour.";
+    return;
+  }
+  if (!selectedSlots.length) {
+    payNote.textContent = `₹${ADVANCE[count]} advance selected. Now tap the hour you want to start.`;
+    document.querySelectorAll(".pay-card").forEach((card) => {
+      const active = Number(card.dataset.hours) === count;
+      card.classList.toggle("active", active);
+      card.setAttribute("aria-pressed", String(active));
+    });
+    return;
+  }
+
+  const block = openBlock(selectedHours()[0], count);
+  selectedSlots = block;
+  const note = block.length < count
+    ? `Only ${block.length} open hour${block.length === 1 ? "" : "s"} are free from this start time.`
+    : "";
+  renderSlots(note);
+}
+
+function renderSlots(note) {
   slotGroups.innerHTML = "";
   if (!selectedDate) {
     slotHeading.textContent = "Select a date";
     slotEmpty.hidden = false;
-    pickedSummary.textContent = "No timing selected yet.";
+    syncSelection(note);
     return;
   }
 
@@ -188,16 +295,13 @@ function renderSlots() {
       button.className = "slot-btn";
       button.style.animationDelay = `${index * 35}ms`;
       button.disabled = !slot.open;
-      if (selectedSlot === slot.id) button.classList.add("picked");
+      const picked = selectedSlots.includes(slot.id);
+      if (picked) button.classList.add("picked");
+      button.setAttribute("aria-pressed", String(picked));
       const status = slot.past ? "Passed" : slot.booked ? "Booked" : slot.price;
       button.innerHTML = `<strong>${slot.label}</strong><small>${status}</small>`;
       if (slot.open) {
-        button.addEventListener("click", () => {
-          selectedSlot = slot.id;
-          dateField.value = selectedDate;
-          timeField.value = `${slot.label} (${slot.period}, ${slot.price}/hour)`;
-          renderSlots();
-        });
+        button.addEventListener("click", () => toggleSlot(Number(slot.id.slice(0, 2))));
       }
       row.append(button);
     });
@@ -206,10 +310,12 @@ function renderSlots() {
     slotGroups.append(group);
   });
 
-  pickedSummary.textContent = timeField.value
-    ? `${slotHeading.textContent} · ${timeField.value}`
-    : `${slotHeading.textContent} · choose an open timing`;
+  syncSelection(note);
 }
+
+document.querySelectorAll(".pay-card").forEach((card) => {
+  card.addEventListener("click", () => applyDuration(Number(card.dataset.hours)));
+});
 
 document.querySelectorAll(".cal-nav").forEach((button) => {
   button.addEventListener("click", () => {
@@ -246,6 +352,8 @@ bookingForm.addEventListener("submit", async (event) => {
     `Phone: ${formData.get("phone")}`,
     `Preferred date: ${formData.get("date")}`,
     `Preferred time: ${formData.get("time")}`,
+    `Duration: ${formData.get("hours")}`,
+    `Advance payment: ${formData.get("advance")}`,
     `Players: ${formData.get("players")}`,
     `Message: ${formData.get("message") || "None"}`,
   ].join("\n");
@@ -280,12 +388,13 @@ bookingForm.addEventListener("submit", async (event) => {
       throw new Error("Email service did not accept the request.");
     }
 
-    successMessage.textContent = `Thanks, ${name}! WhatsApp has opened and your inquiry was emailed successfully.`;
+    successMessage.textContent = `Thanks, ${name}! WhatsApp has opened and your inquiry for ${hoursField.value} (advance ${advanceField.value}) was emailed.`;
     const held = heldSlots();
-    held.add(`${dateField.value}|${selectedSlot}`);
+    selectedSlots.forEach((id) => held.add(`${dateField.value}|${id}`));
     localStorage.setItem(HELD_KEY, JSON.stringify([...held]));
     selectedDate = null;
-    selectedSlot = null;
+    selectedSlots = [];
+    preferredHours = null;
     bookingForm.reset();
     renderCalendar();
     renderSlots();

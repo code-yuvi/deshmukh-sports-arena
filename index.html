@@ -219,14 +219,37 @@
           <div class="slot-panel" id="slot-panel" aria-live="polite">
             <p class="cal-kicker">Timings</p>
             <h3 id="slot-heading">Select a date</h3>
-            <p class="slot-empty" id="slot-empty">Choose an open day to see hourly slots from 6:00 AM to 11:00 PM.</p>
+            <p class="slot-empty" id="slot-empty">Choose an open day, then tap up to 3 back-to-back hours.</p>
             <div id="slot-groups"></div>
           </div>
         </div>
 
         <p class="picked-summary" id="picked-summary">No timing selected yet.</p>
+        <div class="pay-options">
+          <p class="cal-kicker">Advance payment</p>
+          <div class="pay-grid" id="pay-grid">
+            <button class="pay-card" type="button" data-hours="1" aria-pressed="false">
+              <strong>1 hour</strong>
+              <span>₹200</span>
+              <small>Advance</small>
+            </button>
+            <button class="pay-card" type="button" data-hours="2" aria-pressed="false">
+              <strong>2 hours</strong>
+              <span>₹400</span>
+              <small>Advance</small>
+            </button>
+            <button class="pay-card" type="button" data-hours="3" aria-pressed="false">
+              <strong>3 hours</strong>
+              <span>₹600</span>
+              <small>Advance</small>
+            </button>
+          </div>
+          <p class="pay-note" id="pay-note">Select 1, 2 or 3 back-to-back hours. Advance is ₹200 per hour.</p>
+        </div>
         <input type="hidden" name="date" id="booking-date">
         <input type="hidden" name="time" id="booking-time">
+        <input type="hidden" name="hours" id="booking-hours">
+        <input type="hidden" name="advance" id="booking-advance">
 
         <div class="form-row">
           <label>Full name
@@ -249,7 +272,7 @@
           <textarea name="message" rows="3" placeholder="Tell us anything else about your booking"></textarea>
         </label>
         <button class="button button-primary" type="submit">Send booking inquiry <span>→</span></button>
-        <p class="form-note">No payment required. We’ll confirm your slot first.</p>
+        <p class="form-note">Advance confirms the slots. The remaining turf charge is collected at the arena.</p>
         <div class="form-success" role="status" aria-live="polite"></div>
       </form>
     </section>

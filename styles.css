@@ -946,8 +946,70 @@ h2 {
   to { opacity: 1; transform: none; }
 }
 
+.pay-options {
+  margin: 0 0 18px;
+}
+
+.pay-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.pay-card {
+  padding: 14px 12px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.pay-card:hover {
+  transform: translateY(-2px);
+}
+
+.pay-card strong {
+  display: block;
+  font: 600 italic 16px/1 "Oswald", sans-serif;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.pay-card span {
+  display: block;
+  margin: 8px 0 4px;
+  font: 700 26px/1 "Oswald", sans-serif;
+}
+
+.pay-card small {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.pay-card.active {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.pay-card.active small {
+  color: var(--lime);
+}
+
+.pay-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .picked-summary {
-  margin: 4px 0 18px;
+  margin: 4px 0 14px;
   padding: 10px 12px;
   color: #25440e;
   background: #e9f4c9;
