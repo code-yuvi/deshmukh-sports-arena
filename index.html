@@ -271,10 +271,27 @@
         <label>Message <span>(optional)</span>
           <textarea name="message" rows="3" placeholder="Tell us anything else about your booking"></textarea>
         </label>
-        <button class="button button-primary" type="submit">Send booking inquiry <span>→</span></button>
-        <p class="form-note">Advance confirms the slots. The remaining turf charge is collected at the arena.</p>
+        <button class="button button-pay" type="button" id="pay-advance">Pay advance <span>→</span></button>
+        <button class="button button-ghost button-inquiry" type="submit">Send inquiry without payment</button>
+        <p class="form-note">Pay the advance to hold the slots. The remaining turf charge is collected at the arena.</p>
         <div class="form-success" role="status" aria-live="polite"></div>
       </form>
+
+      <dialog class="pay-dialog" id="pay-dialog">
+        <p class="cal-kicker">Pay advance</p>
+        <h3 id="pay-amount">₹200</h3>
+        <p id="pay-detail"></p>
+        <img id="pay-qr" alt="Scan to pay the advance with any UPI app" width="180" height="180">
+        <p class="pay-upi">UPI ID <strong id="pay-upi-id"></strong></p>
+        <div class="upi-apps">
+          <a id="pay-gpay" href="#">Google Pay</a>
+          <a id="pay-phonepe" href="#">PhonePe</a>
+          <a id="pay-paytm" href="#">Paytm</a>
+          <a id="pay-any" href="#">Any UPI app</a>
+        </div>
+        <button class="button button-primary" type="button" id="pay-done">I have paid <span>→</span></button>
+        <button class="pay-close" type="button" id="pay-close">Close</button>
+      </dialog>
     </section>
 
     <section class="contact-strip" id="contact">

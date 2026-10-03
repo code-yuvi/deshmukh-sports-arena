@@ -1074,6 +1074,103 @@ h2 {
   border: 0;
 }
 
+.button-pay {
+  width: 100%;
+  margin-top: 8px;
+  border: 0;
+}
+
+.button-inquiry {
+  width: 100%;
+  margin-top: 10px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  clip-path: none;
+  transform: skewX(-8deg);
+}
+
+.button-inquiry:hover {
+  background: #f3f1e8;
+  transform: skewX(-8deg) translateY(-2px);
+}
+
+.pay-dialog {
+  width: min(420px, calc(100% - 32px));
+  padding: 28px 24px 22px;
+  border: 0;
+  border-top: 6px solid var(--lime);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.pay-dialog::backdrop {
+  background: rgba(8, 16, 12, 0.72);
+}
+
+.pay-dialog h3 {
+  margin: 0 0 6px;
+  font: 700 italic 64px/0.9 "Oswald", sans-serif;
+  letter-spacing: -2px;
+}
+
+.pay-dialog img {
+  display: block;
+  margin: 16px auto;
+  padding: 8px;
+  background: #fff;
+}
+
+.pay-upi {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.pay-upi strong {
+  color: var(--ink);
+}
+
+.upi-apps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.upi-apps a {
+  padding: 12px 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.upi-apps a:hover {
+  border-color: var(--green);
+}
+
+.pay-dialog .button {
+  width: 100%;
+}
+
+.pay-close {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 0;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .form-note {
   margin: 13px 0 0;
   color: var(--muted);

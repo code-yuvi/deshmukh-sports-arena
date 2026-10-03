@@ -19,6 +19,10 @@ const now = new Date();
 const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 let viewMonth = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
 const ADVANCE = { 1: 200, 2: 400, 3: 600 };
+const UPI_ID = "9730803751@ybl";
+const UPI_NAME = "Deshmukh Sports Arena";
+const payButton = document.querySelector("#pay-advance");
+const payDialog = document.querySelector("#pay-dialog");
 let selectedDate = null;
 let selectedSlots = [];
 let preferredHours = null;
@@ -197,6 +201,7 @@ function syncSelection(note) {
       ? `${slotHeading.textContent} · choose 1, 2 or 3 open hours`
       : "No timing selected yet.";
     payNote.textContent = note || "Select 1, 2 or 3 back-to-back hours. Advance is ₹200 per hour.";
+    payButton.textContent = "Pay advance";
     return;
   }
 
@@ -207,7 +212,43 @@ function syncSelection(note) {
   hoursField.value = `${count} hour${count > 1 ? "s" : ""}`;
   advanceField.value = `₹${advance}`;
   pickedSummary.textContent = `${slotHeading.textContent} · ${range} · Advance ₹${advance}`;
-  payNote.textContent = note || `${hoursField.value} selected. Pay ₹${advance} in advance to confirm. The balance is collected at the arena.`;
+  payNote.textContent = note || `${hoursField.value} selected. Pay ₹${advance} now with UPI, or send an inquiry and pay later.`;
+  payButton.innerHTML = `Pay ₹${advance} advance <span>→</span>`;
+}
+
+function upiLink(scheme, amount, note) {
+  const params = new URLSearchParams({
+    pa: UPI_ID,
+    pn: UPI_NAME,
+    am: String(amount),
+    cu: "INR",
+    tn: note,
+  });
+  return `${scheme}?${params.toString()}`;
+}
+
+function openAdvancePayment() {
+  const successMessage = bookingForm.querySelector(".form-success");
+  if (!dateField.value || !timeField.value) {
+    successMessage.textContent = "Choose an open date and timing before paying the advance.";
+    successMessage.classList.add("show", "is-error");
+    return;
+  }
+  if (!bookingForm.reportValidity()) return;
+
+  const amount = ADVANCE[selectedSlots.length];
+  const note = `Turf advance ${dateField.value} ${timeField.value}`;
+  const genericLink = upiLink("upi://pay", amount, note);
+  document.querySelector("#pay-amount").textContent = `₹${amount}`;
+  document.querySelector("#pay-detail").textContent = `${slotHeading.textContent} · ${timeField.value}`;
+  document.querySelector("#pay-upi-id").textContent = UPI_ID;
+  document.querySelector("#pay-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(genericLink)}`;
+  document.querySelector("#pay-gpay").href = upiLink("tez://upi/pay", amount, note);
+  document.querySelector("#pay-phonepe").href = upiLink("phonepe://pay", amount, note);
+  document.querySelector("#pay-paytm").href = upiLink("paytmmp://pay", amount, note);
+  document.querySelector("#pay-any").href = genericLink;
+  successMessage.classList.remove("show", "is-error");
+  payDialog.showModal();
 }
 
 function toggleSlot(hour) {
@@ -328,8 +369,19 @@ document.querySelectorAll(".cal-nav").forEach((button) => {
 renderCalendar();
 renderSlots();
 
-bookingForm.addEventListener("submit", async (event) => {
+payButton.addEventListener("click", openAdvancePayment);
+document.querySelector("#pay-close").addEventListener("click", () => payDialog.close());
+document.querySelector("#pay-done").addEventListener("click", () => {
+  payDialog.close();
+  sendBooking(true);
+});
+
+bookingForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  sendBooking(false);
+});
+
+async function sendBooking(paid) {
 
   const successMessage = bookingForm.querySelector(".form-success");
   if (!dateField.value || !timeField.value) {
@@ -354,6 +406,7 @@ bookingForm.addEventListener("submit", async (event) => {
     `Preferred time: ${formData.get("time")}`,
     `Duration: ${formData.get("hours")}`,
     `Advance payment: ${formData.get("advance")}`,
+    `Payment status: ${paid ? "Customer marked the UPI advance as paid" : "Not paid yet"}`,
     `Players: ${formData.get("players")}`,
     `Message: ${formData.get("message") || "None"}`,
   ].join("\n");
@@ -388,7 +441,9 @@ bookingForm.addEventListener("submit", async (event) => {
       throw new Error("Email service did not accept the request.");
     }
 
-    successMessage.textContent = `Thanks, ${name}! WhatsApp has opened and your inquiry for ${hoursField.value} (advance ${advanceField.value}) was emailed.`;
+    successMessage.textContent = paid
+      ? `Thanks, ${name}! Your ${advanceField.value} advance is marked paid, and the booking was sent on WhatsApp and email.`
+      : `Thanks, ${name}! Your inquiry for ${hoursField.value} (advance ${advanceField.value}) was sent. You can still pay before the slot is confirmed.`;
     const held = heldSlots();
     selectedSlots.forEach((id) => held.add(`${dateField.value}|${id}`));
     localStorage.setItem(HELD_KEY, JSON.stringify([...held]));
@@ -404,10 +459,10 @@ bookingForm.addEventListener("submit", async (event) => {
     successMessage.innerHTML = `WhatsApp has opened, but automatic email could not be confirmed. <a href="mailto:${emailAddress}?subject=${emailSubject}&body=${emailBody}">Send the email manually</a>.`;
   } finally {
     submitButton.disabled = false;
-    submitButton.innerHTML = "Send booking inquiry <span>→</span>";
+    submitButton.textContent = "Send inquiry without payment";
     successMessage.classList.add("show");
     successMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
-});
+}
 
 document.querySelector("#year").textContent = new Date().getFullYear();
