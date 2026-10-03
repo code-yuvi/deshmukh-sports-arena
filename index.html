@@ -8,13 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
 </head>
 <body>
   <header class="site-header" id="top">
     <a class="brand" href="#top" aria-label="Deshmukh Sports Arena home">
-      <span class="brand-mark">DS</span>
+      <img class="brand-logo" src="logo.svg" alt="" width="52" height="52">
       <span class="brand-copy">
         <strong>Deshmukh</strong>
         <small>Sports Arena</small>
@@ -37,6 +38,8 @@
   <main>
     <section class="hero">
       <div class="hero-overlay"></div>
+      <div class="hero-stripes" aria-hidden="true"></div>
+      <img class="hero-logo" src="logo.svg" alt="" aria-hidden="true">
       <div class="hero-content">
         <p class="eyebrow"><span></span> Your game. Your ground.</p>
         <h1>Where every shot<br><em>feels legendary.</em></h1>
@@ -58,6 +61,13 @@
         <i>↓</i>
       </a>
     </section>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>🏏 Box cricket</span><span>● Night matches</span><span>🏆 Weekend tournaments</span><span>● Corporate leagues</span><span>🏏 Net practice</span><span>● Floodlit turf</span>
+        <span>🏏 Box cricket</span><span>● Night matches</span><span>🏆 Weekend tournaments</span><span>● Corporate leagues</span><span>🏏 Net practice</span><span>● Floodlit turf</span>
+      </div>
+    </div>
 
     <section class="intro section" id="about">
       <div class="section-label">01 / The Arena</div>
@@ -176,35 +186,54 @@
       <div class="booking-copy">
         <p class="eyebrow"><span></span> Reserve your game</p>
         <h2>Your next match<br>starts here.</h2>
-        <p>Send us your preferred date and time. We’ll contact you to confirm availability and complete your booking.</p>
+        <p>Pick an open day on the calendar, choose an hourly timing, and send your inquiry. We’ll confirm the slot on WhatsApp and email.</p>
         <div class="booking-steps">
-          <div><span>1</span><p><strong>Choose a date</strong><small>Tell us when you want to play</small></p></div>
-          <div><span>2</span><p><strong>Pick your slot</strong><small>Morning or evening</small></p></div>
+          <div><span>1</span><p><strong>Choose a date</strong><small>Open days show how many hours are free</small></p></div>
+          <div><span>2</span><p><strong>Pick a timing</strong><small>Hourly slots from 6 AM to 11 PM</small></p></div>
           <div><span>3</span><p><strong>Get confirmation</strong><small>We’ll call or message you</small></p></div>
         </div>
       </div>
 
       <form class="booking-form" id="booking-form">
+        <div class="scheduler">
+          <div class="calendar" id="slot-calendar">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="prev" aria-label="Previous month">←</button>
+              <div>
+                <p class="cal-kicker">Pick a date</p>
+                <h3 class="cal-title" id="cal-title"></h3>
+              </div>
+              <button class="cal-nav" type="button" data-dir="next" aria-label="Next month">→</button>
+            </div>
+            <div class="cal-week" aria-hidden="true">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="cal-grid" id="cal-grid" role="grid" aria-label="Available booking dates"></div>
+            <div class="cal-legend">
+              <span><i class="dot open"></i> Open</span>
+              <span><i class="dot few"></i> Few left</span>
+              <span><i class="dot full"></i> Full</span>
+            </div>
+          </div>
+
+          <div class="slot-panel" id="slot-panel" aria-live="polite">
+            <p class="cal-kicker">Timings</p>
+            <h3 id="slot-heading">Select a date</h3>
+            <p class="slot-empty" id="slot-empty">Choose an open day to see hourly slots from 6:00 AM to 11:00 PM.</p>
+            <div id="slot-groups"></div>
+          </div>
+        </div>
+
+        <p class="picked-summary" id="picked-summary">No timing selected yet.</p>
+        <input type="hidden" name="date" id="booking-date">
+        <input type="hidden" name="time" id="booking-time">
+
         <div class="form-row">
           <label>Full name
             <input type="text" name="name" placeholder="Your name" required>
           </label>
           <label>Phone number
-            <input type="tel" name="phone" placeholder="+91 98765 43210" required>
-          </label>
-        </div>
-        <div class="form-row">
-          <label>Preferred date
-            <input type="date" name="date" required>
-          </label>
-          <label>Preferred time
-            <select name="time" required>
-              <option value="">Select a slot</option>
-              <option>Morning (6 AM – 12 PM)</option>
-              <option>Afternoon (12 PM – 4 PM)</option>
-              <option>Evening (4 PM – 8 PM)</option>
-              <option>Night (8 PM – 11 PM)</option>
-            </select>
+            <input type="tel" name="phone" placeholder="+91 97308 03751" required>
           </label>
         </div>
         <label>Number of players
@@ -243,7 +272,7 @@
 
   <footer>
     <a class="brand footer-brand" href="#top">
-      <span class="brand-mark">DS</span>
+      <img class="brand-logo" src="logo.svg" alt="" width="52" height="52">
       <span class="brand-copy"><strong>Deshmukh</strong><small>Sports Arena</small></span>
     </a>
     <p>Play hard. Make memories.</p>
