@@ -1,11 +1,11 @@
 :root {
-  --ink: #121614;
-  --cream: #f3f1ea;
-  --paper: #f7f6f2;
-  --lime: #e4b84a;
-  --green: #12382c;
-  --muted: #667068;
-  --line: rgba(18, 22, 20, 0.12);
+  --ink: #120b1d;
+  --cream: #f4f0fa;
+  --paper: #ffffff;
+  --lime: #f2c230;
+  --green: #3a225d;
+  --muted: #6c6579;
+  --line: rgba(58, 34, 93, 0.14);
 }
 
 * {
@@ -46,8 +46,10 @@ textarea {
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 5%;
+  padding: 12px 5%;
   color: #fff;
+  background: var(--green);
+  box-shadow: 0 4px 18px rgba(18, 11, 29, 0.35);
 }
 
 .brand {
@@ -143,7 +145,7 @@ textarea {
   align-items: center;
   overflow: hidden;
   color: #fff;
-  background: #0b1612;
+  background: #160c25;
 }
 
 .hero-photos {
@@ -184,8 +186,8 @@ textarea {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(8, 16, 12, 0.86) 0%, rgba(8, 16, 12, 0.42) 46%, rgba(8, 16, 12, 0.28) 100%),
-    linear-gradient(180deg, rgba(8, 16, 12, 0.28) 0%, transparent 28%, rgba(8, 16, 12, 0.55) 100%);
+    linear-gradient(90deg, rgba(30, 15, 52, 0.92) 0%, rgba(42, 22, 72, 0.55) 46%, rgba(18, 11, 29, 0.3) 100%),
+    linear-gradient(180deg, transparent 0%, transparent 40%, rgba(18, 11, 29, 0.8) 100%);
 }
 
 .hero-content {
@@ -215,7 +217,7 @@ textarea {
 }
 
 .eyebrow.dark {
-  color: #8d6b28;
+  color: #5b3a8c;
 }
 
 h1,
@@ -263,8 +265,8 @@ h1 em {
 
 .sport-pills li {
   padding: 7px 12px;
-  border: 1px solid rgba(228, 184, 74, 0.55);
-  color: #f4efe2;
+  border: 1px solid rgba(242, 194, 48, 0.55);
+  color: #ffffff;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.4px;
@@ -318,7 +320,7 @@ h1 em {
   flex-direction: column;
   padding: 24px 25px;
   border-top: 2px solid var(--lime);
-  background: rgba(11, 24, 16, 0.76);
+  background: rgba(58, 34, 93, 0.85);
   backdrop-filter: blur(8px);
 }
 
@@ -498,7 +500,7 @@ h2 {
   height: 42px;
   margin-bottom: 26px;
   place-items: center;
-  border: 1px solid rgba(228, 184, 74, 0.55);
+  border: 1px solid rgba(242, 194, 48, 0.55);
   border-radius: 50%;
   color: var(--lime);
   font-weight: 700;
@@ -522,7 +524,7 @@ h2 {
   align-items: stretch;
   grid-column: span 2;
   background:
-    linear-gradient(90deg, rgba(10, 20, 13, 0.3), transparent),
+    linear-gradient(90deg, rgba(58, 34, 93, 0.45), transparent),
     url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1400&q=85")
     center 38% / cover no-repeat;
 }
@@ -584,7 +586,7 @@ h2 {
 }
 
 .time-tag {
-  color: #8d6b28;
+  color: #5b3a8c;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 2px;
@@ -649,7 +651,7 @@ h2 {
 .price-card li::before {
   position: absolute;
   left: 0;
-  color: #8d6b28;
+  color: #5b3a8c;
   content: "✓";
 }
 
@@ -673,7 +675,7 @@ h2 {
 .booking {
   display: grid;
   color: #fff;
-  background: #173c29;
+  background: var(--green);
   grid-template-columns: 0.82fr 1fr;
   gap: 10%;
 }
@@ -703,7 +705,7 @@ h2 {
   height: 32px;
   flex: 0 0 32px;
   place-items: center;
-  border: 1px solid rgba(228, 184, 74, 0.55);
+  border: 1px solid rgba(242, 194, 48, 0.55);
   border-radius: 50%;
   color: var(--lime);
   font-size: 10px;
@@ -754,7 +756,7 @@ h2 {
 
 .cal-kicker {
   margin: 0 0 2px;
-  color: #688928;
+  color: #5b3a8c;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 1.6px;
@@ -838,7 +840,7 @@ h2 {
 }
 
 .cal-day small {
-  color: #8d6b28;
+  color: #5b3a8c;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -861,7 +863,7 @@ h2 {
 }
 
 .cal-day.today {
-  border-color: #183e2a;
+  border-color: #3a225d;
 }
 
 .cal-day.few small {
@@ -965,7 +967,7 @@ h2 {
 }
 
 .slot-btn:hover:not(:disabled) {
-  border-color: #183e2a;
+  border-color: #3a225d;
 }
 
 .slot-btn.picked {
@@ -1055,8 +1057,8 @@ h2 {
 .picked-summary {
   margin: 4px 0 14px;
   padding: 10px 12px;
-  color: #3d3418;
-  background: #f6ecd2;
+  color: #3a225d;
+  background: #efe7fa;
   font-size: 12px;
   font-weight: 700;
 }
@@ -1109,7 +1111,7 @@ h2 {
 .booking-form input:focus,
 .booking-form select:focus,
 .booking-form textarea:focus {
-  border-color: #8d6b28;
+  border-color: #5b3a8c;
 }
 
 .booking-form .button {
@@ -1147,7 +1149,7 @@ h2 {
 }
 
 .pay-dialog::backdrop {
-  background: rgba(8, 16, 12, 0.72);
+  background: rgba(22, 12, 37, 0.78);
 }
 
 .pay-dialog h3 {
@@ -1224,8 +1226,8 @@ h2 {
   display: none;
   margin-top: 16px;
   padding: 12px;
-  color: #3d3418;
-  background: #f6ecd2;
+  color: #3a225d;
+  background: #efe7fa;
   font-size: 11px;
   text-align: center;
 }
@@ -1243,7 +1245,7 @@ h2 {
   display: grid;
   padding: 46px 7%;
   color: white;
-  background: #0d100d;
+  background: #2a1845;
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -1283,7 +1285,7 @@ footer {
   justify-content: space-between;
   padding: 35px 7%;
   color: rgba(255, 255, 255, 0.55);
-  background: #080a08;
+  background: #120b1d;
   font-size: 9px;
 }
 
@@ -1302,11 +1304,11 @@ h1 em {
 }
 
 .button {
-  border-radius: 2px;
+  border-radius: 6px;
 }
 
 .button-primary:hover {
-  background: #f0cb6a;
+  background: #ffd54f;
 }
 
 .button-ghost:hover {
@@ -1315,7 +1317,7 @@ h1 em {
 
 .nav-cta {
   border: 0;
-  border-radius: 2px;
+  border-radius: 4px;
   color: var(--ink);
   background: var(--lime);
 }
@@ -1327,7 +1329,7 @@ h1 em {
   z-index: 1;
   width: 34%;
   height: 130%;
-  background: linear-gradient(180deg, rgba(255, 236, 196, 0.16), transparent 72%);
+  background: linear-gradient(180deg, rgba(242, 194, 48, 0.14), transparent 72%);
   filter: blur(10px);
   pointer-events: none;
   transform: rotate(16deg);
@@ -1356,8 +1358,9 @@ h1 em {
   overflow: hidden;
   margin: 0;
   padding: 14px 0;
-  color: #f4efe2;
-  background: #0e241c;
+  color: #ffffff;
+  background: #120b1d;
+  border-bottom: 3px solid var(--lime);
 }
 
 .ticker-track {
@@ -1387,13 +1390,14 @@ h1 em {
 .section-label {
   display: inline-block;
   padding: 6px 12px;
+  border-radius: 4px;
   color: var(--paper);
-  background: var(--ink);
+  background: var(--green);
 }
 
 .intro {
   background:
-    radial-gradient(circle at 92% 8%, rgba(228, 184, 74, 0.14), transparent 26%),
+    radial-gradient(circle at 92% 8%, rgba(242, 194, 48, 0.14), transparent 26%),
     var(--paper);
 }
 
@@ -1414,7 +1418,7 @@ h1 em {
 }
 
 .feature-card:not(.feature-photo):hover {
-  background: #1d4a32;
+  background: #4a2c75;
 }
 
 .feature-card:not(.feature-photo):hover .feature-icon {
@@ -1427,7 +1431,8 @@ h1 em {
 }
 
 .price-card {
-  border-top: 5px solid var(--ink);
+  border-top: 5px solid var(--green);
+  border-radius: 6px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -1441,7 +1446,9 @@ h1 em {
 }
 
 .booking {
-  background: #102e24;
+  background:
+    radial-gradient(circle at 85% 10%, rgba(242, 194, 48, 0.12), transparent 30%),
+    #2a1845;
 }
 
 .booking-form {
@@ -1450,7 +1457,7 @@ h1 em {
 }
 
 .cal-day.selected {
-  background: linear-gradient(135deg, #183e2a, #2a6a45);
+  background: linear-gradient(135deg, #3a225d, #5b3a8c);
 }
 
 .contact-strip {
@@ -1543,7 +1550,7 @@ h1 em {
     display: none;
     align-items: stretch;
     padding: 22px;
-    background: #10251a;
+    background: #2a1845;
     flex-direction: column;
     gap: 20px;
   }
