@@ -461,72 +461,85 @@ h2 {
   line-height: 1.7;
 }
 
-.feature-grid {
+.arena-showcase {
   display: grid;
   max-width: 1200px;
-  min-height: 650px;
   margin: auto;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  align-items: center;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 70px;
 }
 
-.feature-card {
+.arena-photo {
   position: relative;
-  display: flex;
-  min-height: 290px;
-  align-items: end;
-  padding: 31px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  min-height: 560px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, transparent 45%, rgba(18, 11, 29, 0.85) 100%),
+    url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1400&q=85")
+    center 38% / cover no-repeat;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
 }
 
-.feature-large {
-  grid-row: span 2;
-  background: var(--green);
-}
-
-.feature-number {
+.arena-photo figcaption {
   position: absolute;
-  top: 20px;
-  right: 23px;
-  color: rgba(255, 255, 255, 0.25);
-  font-size: 9px;
-  letter-spacing: 1px;
+  right: 28px;
+  bottom: 28px;
+  left: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 16px;
+  border-left: 3px solid var(--lime);
 }
 
-.feature-icon {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 26px;
-  place-items: center;
-  border: 1px solid rgba(242, 194, 48, 0.55);
-  border-radius: 50%;
-  color: var(--lime);
-  font-weight: 700;
-}
-
-.feature-card h3 {
-  margin-bottom: 13px;
-  font: 600 24px/1.1 "Oswald", sans-serif;
+.arena-photo strong {
+  font: 600 26px/1.1 "Oswald", sans-serif;
   text-transform: uppercase;
 }
 
-.feature-card p {
-  max-width: 270px;
-  margin-bottom: 0;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12px;
-  line-height: 1.7;
+.arena-photo span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
 }
 
-.feature-photo {
-  align-items: stretch;
-  grid-column: span 2;
-  background:
-    linear-gradient(90deg, rgba(58, 34, 93, 0.45), transparent),
-    url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1400&q=85")
-    center 38% / cover no-repeat;
+.arena-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.arena-list li {
+  display: flex;
+  gap: 26px;
+  padding: 26px 0;
+}
+
+.arena-list li + li {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.arena-num {
+  flex: 0 0 44px;
+  color: var(--lime);
+  font: 600 30px/1 "Oswald", sans-serif;
+}
+
+.arena-list h3 {
+  margin-bottom: 8px;
+  font: 600 22px/1.1 "Oswald", sans-serif;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.arena-list p {
+  max-width: 420px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .pricing {
@@ -1409,25 +1422,8 @@ h1 em {
 .features {
   position: relative;
   background:
-    repeating-linear-gradient(90deg, transparent 0 120px, rgba(255, 255, 255, 0.025) 120px 240px),
+    radial-gradient(circle at 10% 0%, rgba(91, 58, 140, 0.45), transparent 45%),
     var(--ink);
-}
-
-.feature-card {
-  transition: background 0.25s ease, transform 0.25s ease;
-}
-
-.feature-card:not(.feature-photo):hover {
-  background: #4a2c75;
-}
-
-.feature-card:not(.feature-photo):hover .feature-icon {
-  color: var(--ink);
-  background: var(--lime);
-}
-
-.feature-icon {
-  transition: transform 0.25s ease, background 0.25s ease;
 }
 
 .price-card {
@@ -1583,16 +1579,13 @@ h1 em {
     padding-top: 0;
   }
 
-  .feature-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .arena-showcase {
+    grid-template-columns: 1fr;
+    gap: 36px;
   }
 
-  .feature-large {
-    grid-row: auto;
-  }
-
-  .feature-photo {
-    grid-column: span 2;
+  .arena-photo {
+    min-height: 380px;
   }
 
   .price-grid {
@@ -1651,17 +1644,12 @@ h1 em {
     font-size: 27px;
   }
 
-  .feature-grid {
-    display: block;
-  }
-
-  .feature-card {
-    min-height: 270px;
-    border-right: 0;
-  }
-
-  .feature-photo {
+  .arena-photo {
     min-height: 300px;
+  }
+
+  .arena-list li {
+    gap: 18px;
   }
 
   .price-card {

@@ -473,7 +473,8 @@ document.querySelector("#year").textContent = new Date().getFullYear();
 const revealGroups = [
   [".intro-grid > *", "reveal-target"],
   [".section-heading > *", "reveal-target"],
-  [".feature-card", "reveal-target"],
+  [".arena-photo", "reveal-target"],
+  [".arena-list li", "reveal-target"],
   [".pricing-top > *", "reveal-target"],
   [".price-card", "reveal-target"],
   [".booking-copy", "reveal-target reveal-left"],
