@@ -1,3 +1,5 @@
+document.documentElement.classList.add("js");
+
 const menuButton = document.querySelector(".menu-toggle");
 const navigation = document.querySelector(".main-nav");
 const bookingForm = document.querySelector("#booking-form");
@@ -466,3 +468,64 @@ async function sendBooking(paid) {
 }
 
 document.querySelector("#year").textContent = new Date().getFullYear();
+
+const revealGroups = [
+  [".intro-grid > *", "reveal-target"],
+  [".section-heading > *", "reveal-target"],
+  [".feature-card", "reveal-target"],
+  [".pricing-top > *", "reveal-target"],
+  [".price-card", "reveal-target"],
+  [".booking-copy", "reveal-target reveal-left"],
+  [".booking-form", "reveal-target reveal-right"],
+  [".contact-strip > div", "reveal-target"],
+];
+
+const revealElements = [];
+revealGroups.forEach(([selector, classNames]) => {
+  document.querySelectorAll(selector).forEach((element, index) => {
+    element.classList.add(...classNames.split(" "));
+    element.style.setProperty("--reveal-delay", `${Math.min(index * 110, 330)}ms`);
+    revealElements.push(element);
+  });
+});
+
+function animateCounter(element) {
+  if (element.dataset.counted) return;
+  element.dataset.counted = "true";
+  const original = element.textContent.trim();
+  const target = Number.parseInt(original, 10);
+  const suffix = original.replace(String(target), "");
+  const startedAt = performance.now();
+  const duration = 1100;
+
+  element.classList.add("counting");
+  function tick(time) {
+    const progress = Math.min((time - startedAt) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    element.textContent = `${Math.round(target * eased)}${suffix}`;
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      element.textContent = original;
+      element.classList.remove("counting");
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+if ("IntersectionObserver" in window) {
+  const revealObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        entry.target.querySelectorAll(".stats strong").forEach(animateCounter);
+        observer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.14, rootMargin: "0px 0px -45px" },
+  );
+  revealElements.forEach((element) => revealObserver.observe(element));
+} else {
+  revealElements.forEach((element) => element.classList.add("is-visible"));
+}
