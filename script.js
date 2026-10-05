@@ -409,6 +409,7 @@ async function sendBooking(paid) {
     `Duration: ${formData.get("hours")}`,
     `Advance payment: ${formData.get("advance")}`,
     `Payment status: ${paid ? "Customer marked the UPI advance as paid" : "Not paid yet"}`,
+    `Sport: ${formData.get("sport")}`,
     `Players: ${formData.get("players")}`,
     `Message: ${formData.get("message") || "None"}`,
   ].join("\n");
