@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Staff desk | Deshmukh Sports Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="bookings.js" defer></script>
+  <script src="admin.js" defer></script>
+</head>
+<body class="admin-body">
+  <header class="admin-bar">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="logo.svg" alt="" width="52" height="52">
+      <span class="brand-copy">
+        <strong>Deshmukh</strong>
+        <small>Staff desk</small>
+      </span>
+    </a>
+    <div class="admin-bar-actions">
+      <a href="index.html">View site</a>
+      <button type="button" id="admin-logout" hidden>Log out</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <form class="admin-login" id="admin-login">
+      <p class="eyebrow dark"><span></span> Staff only</p>
+      <h1>Manage the ground.</h1>
+      <p>Confirm an exact hour for a walk-in or phone booking, and review every order saved on this desk.</p>
+      <label>Staff PIN
+        <input type="password" id="admin-pin" autocomplete="current-password" required>
+      </label>
+      <button class="button button-primary" type="submit">Enter desk <span>→</span></button>
+      <p class="admin-error" id="admin-error" role="alert"></p>
+    </form>
+
+    <section class="admin-app" id="admin-app" hidden>
+      <div class="admin-stats" id="admin-stats"></div>
+
+      <div class="admin-layout">
+        <form class="admin-panel" id="direct-book">
+          <p class="eyebrow dark"><span></span> Direct booking</p>
+          <h2>Book the exact hour.</h2>
+          <p class="admin-lead">Pick a date, tap the open hour, and confirm it. That slot is blocked on the public calendar straight away.</p>
+
+          <div class="calendar admin-calendar" id="admin-calendar">
+            <div class="cal-head">
+              <button class="cal-nav" type="button" data-dir="prev" aria-label="Previous month">←</button>
+              <div>
+                <p class="cal-kicker">Pick a date</p>
+                <h3 class="cal-title" id="admin-cal-title"></h3>
+              </div>
+              <button class="cal-nav" type="button" data-dir="next" aria-label="Next month">→</button>
+            </div>
+            <div class="cal-week" aria-hidden="true">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="cal-grid" id="admin-cal-grid"></div>
+          </div>
+
+          <div id="admin-slots"></div>
+          <p class="picked-summary" id="admin-summary">No hour selected yet.</p>
+
+          <div class="form-row">
+            <label>Player name
+              <input type="text" name="name" placeholder="Name on the booking" required>
+            </label>
+            <label>Phone number
+              <input type="tel" name="phone" placeholder="+91" required>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Sport
+              <select name="sport" required>
+                <option value="">Cricket or football</option>
+                <option>Cricket</option>
+                <option>Football</option>
+              </select>
+            </label>
+            <label>Players <span>(optional)</span>
+              <select name="players">
+                <option value="">Not specified</option>
+                <option>Up to 10 players</option>
+                <option>11–14 players</option>
+                <option>15–20 players</option>
+                <option>More than 20 players</option>
+              </select>
+            </label>
+          </div>
+          <label class="admin-check">
+            <input type="checkbox" name="paid">
+            Advance already collected
+          </label>
+          <button class="button button-primary" type="submit">Confirm this slot <span>→</span></button>
+          <p class="admin-error" id="direct-error" role="status"></p>
+        </form>
+
+        <section class="admin-panel">
+          <div class="admin-orders-head">
+            <div>
+              <p class="eyebrow dark"><span></span> Orders</p>
+              <h2>Every booking.</h2>
+            </div>
+            <div class="admin-filters" id="admin-filters">
+              <button type="button" class="is-active" data-filter="active">Active</button>
+              <button type="button" data-filter="inquiry">Inquiries</button>
+              <button type="button" data-filter="confirmed">Confirmed</button>
+              <button type="button" data-filter="cancelled">Cancelled</button>
+            </div>
+          </div>
+          <div class="order-list" id="order-list"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

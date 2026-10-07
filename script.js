@@ -15,10 +15,7 @@ const hoursField = document.querySelector("#booking-hours");
 const advanceField = document.querySelector("#booking-advance");
 const payNote = document.querySelector("#pay-note");
 
-const SLOT_HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
-const HELD_KEY = "dsa-held-slots";
-const now = new Date();
-const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const { todayStart, dateKey, parseKey, formatClock, daySlots, rangeLabel } = ArenaBookings;
 let viewMonth = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
 const ADVANCE = { 1: 200, 2: 400, 3: 600 };
 const UPI_ID = "9730803751@ybl";
@@ -41,72 +38,6 @@ navigation.querySelectorAll("a").forEach((link) => {
     menuButton.setAttribute("aria-expanded", "false");
   });
 });
-
-function dateKey(date) {
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
-function parseKey(key) {
-  const [year, month, day] = key.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function formatClock(hour) {
-  const suffix = hour >= 12 && hour < 24 ? "PM" : "AM";
-  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
-  return `${hour12}:00 ${suffix}`;
-}
-
-function slotMeta(hour) {
-  const next = hour + 1;
-  const period = hour < 12 ? "Morning" : hour < 16 ? "Afternoon" : "Evening";
-  const price = hour < 12 ? "₹799" : hour < 16 ? "₹899" : "₹1,199";
-  return {
-    id: `${String(hour).padStart(2, "0")}:00`,
-    label: `${formatClock(hour)} – ${formatClock(next)}`,
-    period,
-    price,
-  };
-}
-
-function heldSlots() {
-  try {
-    return new Set(JSON.parse(localStorage.getItem(HELD_KEY) || "[]"));
-  } catch (error) {
-    return new Set();
-  }
-}
-
-function isPastSlot(date, hour) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0, 0) <= now;
-}
-
-function isBooked(key, slotId) {
-  if (heldSlots().has(`${key}|${slotId}`)) return true;
-  let hash = 0;
-  const seed = `${key}|${slotId}`;
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = (hash * 33 + seed.charCodeAt(index)) >>> 0;
-  }
-  const date = parseKey(key);
-  const hour = Number(slotId.slice(0, 2));
-  const weekend = date.getDay() === 0 || date.getDay() === 6;
-  const evening = hour >= 16;
-  const chance = evening ? (weekend ? 48 : 30) : weekend ? 22 : 12;
-  return hash % 100 < chance;
-}
-
-function daySlots(date) {
-  const key = dateKey(date);
-  return SLOT_HOURS.map((hour) => {
-    const meta = slotMeta(hour);
-    const past = isPastSlot(date, hour);
-    const booked = !past && isBooked(key, meta.id);
-    return { ...meta, past, booked, open: !past && !booked };
-  });
-}
 
 function renderCalendar(direction) {
   const year = viewMonth.getFullYear();
@@ -207,7 +138,7 @@ function syncSelection(note) {
     return;
   }
 
-  const range = `${formatClock(hours[0])} – ${formatClock(hours[hours.length - 1] + 1)}`;
+  const range = rangeLabel(selectedSlots);
   const advance = ADVANCE[count];
   dateField.value = selectedDate;
   timeField.value = range;
@@ -396,12 +327,34 @@ async function sendBooking(paid) {
 
   const formData = new FormData(bookingForm);
   const name = formData.get("name");
+  const saved = ArenaBookings.add({
+    date: dateField.value,
+    slots: [...selectedSlots],
+    timeLabel: timeField.value,
+    sport: formData.get("sport"),
+    name,
+    phone: formData.get("phone"),
+    players: formData.get("players"),
+    message: formData.get("message") || "",
+    advance: advanceField.value,
+    payment: paid ? "paid" : "unpaid",
+    status: "inquiry",
+    source: "website",
+  });
+  if (!saved.ok) {
+    successMessage.textContent = saved.error;
+    successMessage.classList.add("show", "is-error");
+    successMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+
   const submitButton = bookingForm.querySelector('button[type="submit"]');
   const whatsappNumber = "919730803751";
   const emailAddress = "yuvrajd568@gmail.com";
   const message = [
     "New booking inquiry - Deshmukh Sports Arena",
     "",
+    `Order: ${saved.order.id}`,
     `Name: ${name}`,
     `Phone: ${formData.get("phone")}`,
     `Preferred date: ${formData.get("date")}`,
@@ -445,21 +398,14 @@ async function sendBooking(paid) {
     }
 
     successMessage.textContent = paid
-      ? `Thanks, ${name}! Your ${advanceField.value} advance is marked paid, and the booking was sent on WhatsApp and email.`
-      : `Thanks, ${name}! Your inquiry for ${hoursField.value} (advance ${advanceField.value}) was sent. You can still pay before the slot is confirmed.`;
-    const held = heldSlots();
-    selectedSlots.forEach((id) => held.add(`${dateField.value}|${id}`));
-    localStorage.setItem(HELD_KEY, JSON.stringify([...held]));
-    selectedDate = null;
-    selectedSlots = [];
-    preferredHours = null;
-    bookingForm.reset();
-    renderCalendar();
-    renderSlots();
+      ? `Thanks, ${name}! ${saved.order.id} is held. Your ${advanceField.value} advance is marked paid, and the booking was sent on WhatsApp and email.`
+      : `Thanks, ${name}! ${saved.order.id} is held for ${hoursField.value}. You can still pay the advance before the slot is confirmed.`;
+    clearBookingForm();
   } catch (error) {
     const emailSubject = encodeURIComponent(`New turf booking inquiry from ${name}`);
     const emailBody = encodeURIComponent(message);
-    successMessage.innerHTML = `WhatsApp has opened, but automatic email could not be confirmed. <a href="mailto:${emailAddress}?subject=${emailSubject}&body=${emailBody}">Send the email manually</a>.`;
+    successMessage.innerHTML = `${saved.order.id} is held on this desk. WhatsApp has opened, but automatic email could not be confirmed. <a href="mailto:${emailAddress}?subject=${emailSubject}&body=${emailBody}">Send the email manually</a>.`;
+    clearBookingForm();
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Send inquiry without payment";
@@ -467,6 +413,24 @@ async function sendBooking(paid) {
     successMessage.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 }
+
+function clearBookingForm() {
+  selectedDate = null;
+  selectedSlots = [];
+  preferredHours = null;
+  bookingForm.reset();
+  renderCalendar();
+  renderSlots();
+}
+
+window.addEventListener("storage", () => {
+  renderCalendar();
+  if (selectedDate) {
+    const stillOpen = selectedSlots.every((id) => !ArenaBookings.isSlotTaken(`${selectedDate}|${id}`));
+    if (!stillOpen) selectedSlots = [];
+  }
+  renderSlots();
+});
 
 document.querySelector("#year").textContent = new Date().getFullYear();
 
