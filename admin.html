@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+  <script src="supabase-config.js" defer></script>
   <script src="bookings.js" defer></script>
   <script src="admin.js" defer></script>
 </head>
@@ -32,8 +34,8 @@
     <form class="admin-login" id="admin-login">
       <p class="eyebrow dark"><span></span> Staff only</p>
       <h1>Manage the ground.</h1>
-      <p>Confirm an exact hour for a walk-in or phone booking, and review every order saved on this desk.</p>
-      <label>Staff PIN
+      <p>Sign in as yuvrajd568@gmail.com to book an exact hour or review orders from any device.</p>
+      <label>Staff password
         <input type="password" id="admin-pin" autocomplete="current-password" required>
       </label>
       <button class="button button-primary" type="submit">Enter desk <span>→</span></button>

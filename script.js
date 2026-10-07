@@ -299,8 +299,10 @@ document.querySelectorAll(".cal-nav").forEach((button) => {
   });
 });
 
-renderCalendar();
-renderSlots();
+ArenaBookings.ready.then(() => {
+  renderCalendar();
+  renderSlots();
+});
 
 payButton.addEventListener("click", openAdvancePayment);
 document.querySelector("#pay-close").addEventListener("click", () => payDialog.close());
@@ -327,7 +329,7 @@ async function sendBooking(paid) {
 
   const formData = new FormData(bookingForm);
   const name = formData.get("name");
-  const saved = ArenaBookings.add({
+  const saved = await ArenaBookings.add({
     date: dateField.value,
     slots: [...selectedSlots],
     timeLabel: timeField.value,
@@ -354,7 +356,7 @@ async function sendBooking(paid) {
   const message = [
     "New booking inquiry - Deshmukh Sports Arena",
     "",
-    `Order: ${saved.order.id}`,
+    `Order: ${saved.order.code}`,
     `Name: ${name}`,
     `Phone: ${formData.get("phone")}`,
     `Preferred date: ${formData.get("date")}`,
@@ -398,13 +400,13 @@ async function sendBooking(paid) {
     }
 
     successMessage.textContent = paid
-      ? `Thanks, ${name}! ${saved.order.id} is held. Your ${advanceField.value} advance is marked paid, and the booking was sent on WhatsApp and email.`
-      : `Thanks, ${name}! ${saved.order.id} is held for ${hoursField.value}. You can still pay the advance before the slot is confirmed.`;
+      ? `Thanks, ${name}! ${saved.order.code} is held. Your ${advanceField.value} advance is marked paid, and the booking was sent on WhatsApp and email.`
+      : `Thanks, ${name}! ${saved.order.code} is held for ${hoursField.value}. You can still pay the advance before the slot is confirmed.`;
     clearBookingForm();
   } catch (error) {
     const emailSubject = encodeURIComponent(`New turf booking inquiry from ${name}`);
     const emailBody = encodeURIComponent(message);
-    successMessage.innerHTML = `${saved.order.id} is held on this desk. WhatsApp has opened, but automatic email could not be confirmed. <a href="mailto:${emailAddress}?subject=${emailSubject}&body=${emailBody}">Send the email manually</a>.`;
+    successMessage.innerHTML = `${saved.order.code} is saved. WhatsApp has opened, but automatic email could not be confirmed. <a href="mailto:${emailAddress}?subject=${emailSubject}&body=${emailBody}">Send the email manually</a>.`;
     clearBookingForm();
   } finally {
     submitButton.disabled = false;
@@ -423,12 +425,12 @@ function clearBookingForm() {
   renderSlots();
 }
 
-window.addEventListener("storage", () => {
-  renderCalendar();
+ArenaBookings.subscribe(() => {
   if (selectedDate) {
     const stillOpen = selectedSlots.every((id) => !ArenaBookings.isSlotTaken(`${selectedDate}|${id}`));
     if (!stillOpen) selectedSlots = [];
   }
+  renderCalendar();
   renderSlots();
 });
 

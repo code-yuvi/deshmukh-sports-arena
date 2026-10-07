@@ -170,8 +170,8 @@ function renderStats(orders) {
   statsRow.innerHTML = cards.map(([label, count]) => `<div><strong>${count}</strong><span>${label}</span></div>`).join("");
 }
 
-function renderOrders() {
-  const orders = list().slice().sort((left, right) => {
+async function renderOrders() {
+  const orders = (await list()).slice().sort((left, right) => {
     if (left.date === right.date) return right.createdAt.localeCompare(left.createdAt);
     return right.date.localeCompare(left.date);
   });
@@ -202,7 +202,7 @@ function renderOrders() {
     return `
       <article class="order-card">
         <div class="order-top">
-          <strong>${escapeHtml(order.id)}</strong>
+          <strong>${escapeHtml(order.code)}</strong>
           <span class="order-status is-${order.status}">${order.status}</span>
         </div>
         <h3>${escapeHtml(when)} · ${escapeHtml(order.timeLabel)}</h3>
@@ -215,11 +215,13 @@ function renderOrders() {
   }).join("");
 }
 
-loginForm.addEventListener("submit", (event) => {
+loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const pin = document.querySelector("#admin-pin").value;
-  if (!ArenaBookings.login(pin)) {
-    loginError.textContent = "That PIN is not recognised.";
+  loginError.textContent = "Checking the staff account...";
+  const ok = await ArenaBookings.login(pin);
+  if (!ok) {
+    loginError.textContent = "That password is not recognised.";
     return;
   }
   loginError.textContent = "";
@@ -227,8 +229,8 @@ loginForm.addEventListener("submit", (event) => {
   showDesk(true);
 });
 
-logoutButton.addEventListener("click", () => {
-  ArenaBookings.logout();
+logoutButton.addEventListener("click", async () => {
+  await ArenaBookings.logout();
   showDesk(false);
 });
 
@@ -249,17 +251,17 @@ document.querySelector("#admin-filters").addEventListener("click", (event) => {
   renderOrders();
 });
 
-orderList.addEventListener("click", (event) => {
+orderList.addEventListener("click", async (event) => {
   const button = event.target.closest("button");
   if (!button) return;
   const { action, id } = button.dataset;
   let result = { ok: true };
-  if (action === "confirm") result = update(id, { status: "confirmed" });
-  if (action === "cancel") result = update(id, { status: "cancelled" });
-  if (action === "restore") result = update(id, { status: "confirmed" });
+  if (action === "confirm") result = await update(id, { status: "confirmed" });
+  if (action === "cancel") result = await update(id, { status: "cancelled" });
+  if (action === "restore") result = await update(id, { status: "confirmed" });
   if (action === "pay") {
-    const order = list().find((item) => item.id === id);
-    result = update(id, { payment: order.payment === "paid" ? "unpaid" : "paid" });
+    const order = (await list()).find((item) => item.id === id);
+    result = await update(id, { payment: order.payment === "paid" ? "unpaid" : "paid" });
   }
   directError.textContent = result.ok ? "" : result.error;
   directError.classList.toggle("is-error", !result.ok);
@@ -268,7 +270,7 @@ orderList.addEventListener("click", (event) => {
   renderOrders();
 });
 
-directForm.addEventListener("submit", (event) => {
+directForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   directError.classList.remove("is-error");
   if (!selectedDate || !selectedSlots.length) {
@@ -278,7 +280,7 @@ directForm.addEventListener("submit", (event) => {
   }
   const data = new FormData(directForm);
   const hours = selectedSlots.length;
-  const result = add({
+  const result = await add({
     date: selectedDate,
     slots: selectedSlots,
     timeLabel: rangeLabel(selectedSlots),
@@ -297,7 +299,7 @@ directForm.addEventListener("submit", (event) => {
     directError.classList.add("is-error");
     return;
   }
-  directError.textContent = `${result.order.id} confirmed for ${result.order.timeLabel}.`;
+  directError.textContent = `${result.order.code} confirmed for ${result.order.timeLabel}.`;
   selectedSlots = [];
   directForm.reset();
   renderCalendar();
@@ -305,11 +307,13 @@ directForm.addEventListener("submit", (event) => {
   renderOrders();
 });
 
-window.addEventListener("storage", () => {
-  if (!ArenaBookings.isAuthed()) return;
+ArenaBookings.subscribe(() => {
+  if (adminApp.hidden) return;
   renderCalendar();
   renderSlots();
   renderOrders();
 });
 
-showDesk(ArenaBookings.isAuthed());
+ArenaBookings.ready.then(async () => {
+  showDesk(await ArenaBookings.isAuthed());
+});
